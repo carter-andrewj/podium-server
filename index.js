@@ -8,7 +8,7 @@ setInterval(
 )
 
 app.get('/', (req, res) => {
-  res.send(counter)
+  res.send("There have been " + counter + " seconds since activation...")
 })
 
 app.listen(3000, () => console.log('Podium Server running on port 3000'))
