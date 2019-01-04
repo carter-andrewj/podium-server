@@ -18,7 +18,7 @@ config.launched = (new Date).getTime();
 
 
 // Set express access control middleware
-app.use((req, res, next) => {
+app.all((req, res, next) => {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Methods",
 		"PUT, GET, POST, DELETE, OPTIONS");
@@ -50,5 +50,5 @@ app.get("/config", (_, res) => {
 // 	res.send(200)
 // })
 
-
-app.listen(3000, () => console.log('Podium Server running on port 3000'))
+//app.listen(3000, () => console.log('Podium Server running on port 3000'))
+app.listen(3001, () => console.log('Podium Server running on port 3001'))
