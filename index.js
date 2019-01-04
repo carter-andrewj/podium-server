@@ -1,5 +1,6 @@
 const express = require('express')
-const app = express()
+var app = express()
+var cors = require('cors')
 
 var fs = require('fs')
 var conf = fs.readFileSync('config.json', 'utf8')
@@ -18,21 +19,14 @@ config.launched = (new Date).getTime();
 
 
 // Set express access control middleware
-app.all((req, res, next) => {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Methods",
-		"PUT, GET, POST, DELETE, OPTIONS");
-	res.header("Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content-Type, Accept");
-	next();
-});
+app.use(cors());
 
 // Default (ping) route
 app.get("/", (_, res) => { res.sendStatus(200) })
 
 // Config route
 app.get("/config", (_, res) => {
-	res.send(JSON.stringify(config))
+	res.json(config)
 })
 
 // User listing route
