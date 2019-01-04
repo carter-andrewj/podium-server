@@ -1,11 +1,11 @@
 const express = require('express')
 var app = express()
-var cors = require('cors')
+
 
 var fs = require('fs')
 var conf = fs.readFileSync('config.json', 'utf8')
 var config = JSON.parse(conf)
-config.launched = (new Date).getTime();
+config.launched = (new Date).getTime()
 
 // Check if podium is already set up for this network/app-key
 
@@ -19,10 +19,17 @@ config.launched = (new Date).getTime();
 
 
 // Set express access control middleware
-app.use(cors());
+app.use(function (req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+})
 
 // Default (ping) route
-app.get("/", (_, res) => { res.sendStatus(200) })
+app.get("/", (req, res) => {
+	res.sendStatus(200)
+})
 
 // Config route
 app.get("/config", (_, res) => {
