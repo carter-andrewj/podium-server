@@ -3,8 +3,8 @@ const app = express()
 
 var fs = require('fs')
 var conf = fs.readFileSync('config.json', 'utf8')
-var Config = JSON.parse(conf)
-var Config.launched = (new Date).getTime();
+var config = JSON.parse(conf)
+config.launched = (new Date).getTime();
 
 // Check if podium is already set up for this network/app-key
 
@@ -20,17 +20,19 @@ var Config.launched = (new Date).getTime();
 // Set express access control middleware
 app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Methods",
+		"PUT, GET, POST, DELETE, OPTIONS");
 	res.header("Access-Control-Allow-Headers",
 		"Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
 
 // Default (ping) route
-app.get("/", (_, res) => { res.send(200) })
+app.get("/", (_, res) => { res.sendStatus(200) })
 
 // Config route
 app.get("/config", (_, res) => {
-	res.send(JSON.stringify(Config))
+	res.send(JSON.stringify(config))
 })
 
 // User listing route
