@@ -4,6 +4,7 @@ const app = express()
 var fs = require('fs')
 var conf = fs.readFileSync('config.json', 'utf8')
 var Config = JSON.parse(conf)
+var Config.launched = (new Date).getTime();
 
 // Check if podium is already set up for this network/app-key
 
@@ -29,7 +30,7 @@ app.get("/", (_, res) => { res.send(200) })
 
 // Config route
 app.get("/config", (_, res) => {
-	res.send(conf)
+	res.send(JSON.stringify(Config))
 })
 
 // User listing route
