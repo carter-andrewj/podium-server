@@ -28,7 +28,8 @@ app.use(function (req, res, next) {
 
 // Default (ping) route
 app.get("/", (req, res) => {
-	res.sendStatus(200)
+	res.send("Working")
+	//res.sendStatus(200)
 })
 
 // Config route
