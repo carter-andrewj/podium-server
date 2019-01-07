@@ -40,6 +40,7 @@ config.launched = (new Date).getTime()
 // Set express access control middleware
 //TODO - Make this more secure than just allowing everything through
 app.use(function (req, res, next) {
+	res.header("what", req.headers.origin)
 	res.header('Access-Control-Allow-Origin', "http://" + req.headers.origin);
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', "Origin, X-Requested-With, Content-Type, Accept");
