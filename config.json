@@ -3,6 +3,6 @@
 	"ApplicationID": "podiumALPHA-11",
 	"API": "https://api.podium-network.com",
 	"MediaStore": "podium-media-store",
-	"Timeout": 5,
+	"Timeout": 7,
 	"Lifetime": 0
 }
