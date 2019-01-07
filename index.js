@@ -10,16 +10,16 @@ var s3 = new S3({
 
 
 const FS = require('fs')
-var conf = JSON.parse(FS.readFileSync('config.json', 'utf8'))
+var config = JSON.parse(FS.readFileSync('config.json', 'utf8'))
 config.launched = (new Date).getTime()
 
 
-var Podium = require('podium')
-var podium = new Podium(config.Universe, config.ApplicationID)
+// var Podium = require('podium')
+// var podium = new Podium(config.Universe, config.ApplicationID)
 
 
 // Check if podium is already set up for this network/app-key
-if (!podium.alive) {
+//if (!podium.alive) {
 
 	// Set up root podium account
 
@@ -31,7 +31,7 @@ if (!podium.alive) {
 
 	// Register bots
 
-}
+//}
 
 // Launch bots
 
@@ -71,7 +71,7 @@ app.post("/media", (req, res) => {
 	// Upload media to S3
 	s3.putObject({
 			Bucket: config.MediaBucket,
-			Key:
+			Key: ""
 		})
 		.promise()
 		.then(() => res.status(200))
