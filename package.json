@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.384.0",
+    "body-parser": "^1.18.3",
+    "busboy-body-parser": "^0.3.2",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "radixdlt": "^1.0.6-alpha"

@@ -4,5 +4,6 @@
 	"API": "https://api.podium-network.com",
 	"MediaStore": "podium-media-store",
 	"Timeout": 30,
-	"Lifetime": 0
+	"Lifetime": 0,
+	"FileLimit": "5mb"
 }

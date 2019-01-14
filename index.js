@@ -1,21 +1,37 @@
 const Express = require('express')
 var app = Express()
 
-
-const S3 = require('aws-sdk/clients/s3')
-var s3 = new S3({
-	apiVersion: '2006-03-01',
-	region: 'eu-west-1'
-});
+// const BodyParser = require('body-parser');
+// app.use(BodyParser.urlencoded({ extended: true }))
+// app.use(BodyParser.json())
 
 
+
+// Load config
 const FS = require('fs')
 var config = JSON.parse(FS.readFileSync('config.json', 'utf8'))
 config.launched = (new Date).getTime()
 
 
-// var Podium = require('podium')
-// var podium = new Podium(config.Universe, config.ApplicationID)
+
+// Set up S3 connection
+const S3 = require('aws-sdk/clients/s3')
+const s3 = new S3({
+	apiVersion: '2006-03-01',
+	region: 'eu-west-1',
+	accessKeyId: process.env.AWS_ACCESS_KEY,
+	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+});
+
+
+
+// Set up API parser
+const BusBoy = require("busboy-body-parser")
+app.use(BusBoy({ limit: config.FileLimit }));
+
+
+// var Podium = require('podix')
+// var podium = new Podium(config.Universe)
 
 
 // Check if podium is already set up for this network/app-key
@@ -37,6 +53,7 @@ config.launched = (new Date).getTime()
 
 
 
+
 // Set express access control middleware
 //TODO - Make this more secure than just allowing everything through
 app.use(function (req, res, next) {
@@ -46,37 +63,83 @@ app.use(function (req, res, next) {
 	next();
 })
 
-
 // Default (ping) route
-app.get("/", (req, res) => {
-	res.status(200)
+app.get("/", (request, response) => {
+	response
+		.status(200)
 		.send("Working")
+		.end()
 })
+
+
+
+
 
 
 // Config route
-app.get("/config", (_, res) => {
-	res.status(200)
+app.get("/config", (_, response) => {
+	response
+		.status(200)
 		.json(config)
+		.end()
 })
 
 
+
+
+
+
+// User route
+app.get("/user", (request, response) => {
+	response
+		.status(200)
+		.end()
+})
+
+// User registration route
+app.post("/user", (request, response) => {
+
+	console.log("User:", request.body);
+
+	response
+		.status(200)
+		.end()
+
+})
+
+
+
+
+
+
 // Receive and upload media files to S3
-app.post("/media", (req, res) => {
+app.post("/media", (request, response) => {
 
 	// Verify media id is registered on Radix
 	// to the posting user
+	//const fileAddress = 
+	console.log(request.body.address)
 
-	// Get media from file
+	//TODO - Check image does not already exist in S3
 
 	// Upload media to S3
 	s3.putObject({
-			Bucket: config.MediaBucket,
-			Key: ""
+			Body: request.files.file.data,
+			Key: request.body.address + ".jpg",
+			Bucket: config.MediaStore
 		})
 		.promise()
-		.then(() => res.status(200))
-		.catch(() => res.status(500))
+		.then(() =>
+			response
+				.status(200)
+				.end()
+		)
+		.catch(error =>
+			response
+				.status(500)
+				.send(error)
+				.end()
+		)
 
 })
 
@@ -90,11 +153,16 @@ app.post("/media", (req, res) => {
 
 // Topic search route
 
-// Media endpoint route
-// app.put('/media', (req, res) => {
-// 	// Check media object has been registered with ledger
-// 	// Upload image to S3
-// 	res.send(200)
-// })
 
-app.listen(3000, () => console.log('Podium Server running on port 3000'))
+
+// Start server
+var server = app.listen(3000, () => console.log('Podium Server running on port 3000'))
+
+// Stop server
+// function shutdown() {
+// 	console.log("closing server")
+// 	server.close()
+// }
+// process.on('exit', shutdown);
+// process.on('uncaughtException', shutdown);
+// process.stdin.resume();
