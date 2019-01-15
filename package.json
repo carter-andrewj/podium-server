@@ -17,7 +17,8 @@
     "busboy-body-parser": "^0.3.2",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "radixdlt": "^1.0.6-alpha"
+    "radixdlt": "^1.0.6-alpha",
+    "safe-buffer": "^5.1.2"
   },
   "devDependencies": {
     "pm2": "^3.2.4"

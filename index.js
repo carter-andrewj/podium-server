@@ -6,6 +6,8 @@ var app = Express()
 // app.use(BodyParser.json())
 
 
+//var Buffer = require('safe-buffer').Buffer;
+
 
 // Load config
 const FS = require('fs')
@@ -115,17 +117,19 @@ app.post("/user", (request, response) => {
 // Receive and upload media files to S3
 app.post("/media", (request, response) => {
 
-	// Verify media id is registered on Radix
-	// to the posting user
+	//TODO - Verify media id is registered on Radix
+	//		 to the posting user
 	//const fileAddress = 
-	console.log(request.body.address)
 
 	//TODO - Check image does not already exist in S3
 
+	// Unpack base64 string
+	var image = request.body.file.split(",")
+
 	// Upload media to S3
 	s3.putObject({
-			Body: request.files.file.data,
-			Key: request.body.address + ".jpg",
+			Body: Buffer.from(image[1], "base64"),
+			Key: request.body.address,
 			Bucket: config.MediaStore
 		})
 		.promise()
