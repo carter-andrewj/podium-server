@@ -1,6 +1,6 @@
 {
 	"Universe": "alphanet",
-	"ApplicationID": "podiumALPHA-11",
+	"ApplicationID": "podiumALPHA-12",
 	"API": "api.podium-network.com",
 	"MediaStore": "media.podium-network.com",
 	"Timeout": 30,
