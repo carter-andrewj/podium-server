@@ -1,8 +1,8 @@
 {
 	"Universe": "alphanet",
 	"ApplicationID": "podiumALPHA-11",
-	"API": "https://api.podium-network.com",
-	"MediaStore": "podium-media-store",
+	"API": "api.podium-network.com",
+	"MediaStore": "media.podium-network.com",
 	"Timeout": 30,
 	"Lifetime": 0,
 	"FileLimit": "5mb"
