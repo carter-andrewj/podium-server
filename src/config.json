@@ -5,5 +5,7 @@
 	"MediaStore": "media.podium-network.com",
 	"Timeout": 30,
 	"Lifetime": 0,
-	"FileLimit": "5mb"
+	"FileLimit": "5mb",
+	"ReloadConfig": 600,
+	"Port": 3000
 }
