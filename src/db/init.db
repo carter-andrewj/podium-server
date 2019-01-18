@@ -1,0 +1,22 @@
+const loki = require("lokijs");
+const lfsa = require('../src/loki-fs-structured-adapter.js');
+
+var adapter = new lfsa();
+var db = new loki('sandbox.db', { 
+  adapter : adapter,
+  autoload: true,
+  autoloadCallback : databaseInitialize,
+  autosave: true, 
+  autosaveInterval: 4000
+});
+
+function databaseInitialize() {
+  var log = db.getCollection("log");
+
+  if (log === null) {
+    db.addCollection("log");
+  }
+
+  // log some random event data as part of our example
+  log.insert({ event: 'dbinit', dt: (new Date()).getTime() });
+}

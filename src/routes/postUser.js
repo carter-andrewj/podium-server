@@ -4,29 +4,34 @@ export function postUser(server, podium, db) {
 
 	// User registration route
 
+	//TODO - Replace with scrypto smart contract
+
 	server.post("/user", (request, response) => {
 
 		//TODO - Validate input data
+		const data = request.body;
 
 		// Create user
 		podium
-			.newUser(body.id, body.pw, body.name,
-				body.bio, body.image)
+			.newUser(data.id, data.pw, data.name,
+				data.bio, data.image)
 			.then(address => {
 
 				// Add user to roster
-				db.setIn(["users", body.id], address)
+				db.setIn(["users", address], data.id)
 
 				// Confirm user creation to client
 				response
-					.send(address)
-					.status(500)
+					.json({
+						address: address
+					})
+					.status(200)
 					.end()
 
 			})
 			.catch(error => {
 				response
-					.send(error)
+					.json(error)
 					.status(500)
 					.end()
 			})

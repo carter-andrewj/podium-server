@@ -3,6 +3,8 @@ import { Map, fromJS } from 'immutable';
 import Express from 'express';
 import BusBoy from "busboy-body-parser";
 
+import { getDB } from "./db/init";
+
 import s3 from 'aws-sdk/clients/s3';
 
 import Podix from '@carter_andrewj/podix';
@@ -22,10 +24,7 @@ var server = Express()
 let podium;
 
 // Database
-var db = Map(fromJS({
-	users: {},
-	topics: {}
-}))
+var db = getDB();
 
 // S3 connection
 const storage = new s3({
@@ -67,8 +66,13 @@ function init() {
 					.mergeDeep(fromJS(conf))
 					.set("latest", (new Date).getTime())
 				podium = new Podix(config.toJS())
-				return launchNetwork(podium)
+				podium.setDebug(true)
+				launchNetwork(podium)
+					.then(result => resolve(result))
 			})
+
+			// Handle errors
+			.catch(error => reject(error))
 
 	)
 }
@@ -79,6 +83,7 @@ init().then(() => {
 	// Set the server to periodlically check for
 	// changes to the config file
 	const reload = config.get("ReloadConfig")
+	console.log(`Checking for updates every ${reload}s`)
 	setInterval(init, reload * 1000)
 
 	// Set up post body and file parsing

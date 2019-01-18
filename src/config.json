@@ -1,11 +1,22 @@
 {
+
+	// Radix
 	"Universe": "alphanet",
 	"ApplicationID": "podiumALPHA-12",
-	"API": "api.podium-network.com",
-	"MediaStore": "media.podium-network.com",
 	"Timeout": 30,
 	"Lifetime": 0,
+
+	// Server
+	"Port": 3000,
+	"API": "api.podium-network.com",
+
+	// AWS
+	"MediaStore": "media.podium-network.com",
 	"FileLimit": "5mb",
 	"ReloadConfig": 600,
-	"Port": 3000
+	
+	// DB
+	"DatabaseName": "podium.db",
+	"BackupFrequency": 600
+	
 }
