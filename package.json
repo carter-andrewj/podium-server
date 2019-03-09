@@ -2,11 +2,11 @@
   "name": "podium-server",
   "version": "1.0.0",
   "description": "",
-  "main": "serve.js",
+  "main": "dist/serve.js",
   "scripts": {
     "start": "npm run sync && nodemon --exec babel-node src/serve.js",
     "sync": "aws s3 sync ./data s3://podium-core --exclude '*DS_Store'",
-    "build": "npm run sync && babel src —-out-dir dist",
+    "build": "npm run sync && babel src -d dist",
     "serve": "node dist/serve.js",
     "restart": "pm2 startOrRestart ecosystem.config.js",
     "deploy": "pm2 deploy ecosystem.config.js production"
