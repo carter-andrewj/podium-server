@@ -1,5 +1,8 @@
 import { fromJS } from 'immutable';
 
+import { launchBots } from './bots/bots';
+
+
 
 
 export function launch(podium) {
@@ -17,7 +20,6 @@ export function launch(podium) {
 
 				// Unpack image
 				let image;
-				let ext;
 				if (data) {
 					image = data.Body.toString('base64')
 				}
@@ -28,6 +30,7 @@ export function launch(podium) {
 					.updateProfilePicture(image, "png")
 
 			})
+
 
 		// Get pre-register accounts from S3
 		var reservedAccounts = podium.S3
@@ -75,16 +78,29 @@ export function launch(podium) {
 			))
 
 
-		// Launch bots
-
-
 		// Wait for tasks to complete
 		Promise.all([rootPicture, reservedAccounts])
+			.then(() => launchBots(podium))
 			.then(() => resolve())
 			.catch(error => reject(error))
 
 	})
 }
+
+
+
+export function resume(podium) {
+	return new Promise((resolve, reject) => {
+		launchBots(podium)
+			.then(resolve)
+			.catch(reject)
+	})
+}
+
+
+
+
+
 
 
 
