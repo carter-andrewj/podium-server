@@ -1,3 +1,5 @@
+import '@babel/polyfill';
+
 import s3 from 'aws-sdk/clients/s3';
 import Express from 'express';
 

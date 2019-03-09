@@ -1,5 +1,7 @@
 "use strict";
 
+require("@babel/polyfill");
+
 var _s2 = _interopRequireDefault(require("aws-sdk/clients/s3"));
 
 var _express = _interopRequireDefault(require("express"));
