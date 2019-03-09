@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'podium-server',
-    script: './src/serve.js'
+    script: './dist/serve.js'
   }],
   deploy: {
     production: {
