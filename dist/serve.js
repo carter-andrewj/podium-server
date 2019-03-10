@@ -2,6 +2,8 @@
 
 require("@babel/polyfill");
 
+var _fs = _interopRequireDefault(require("fs"));
+
 var _s2 = _interopRequireDefault(require("aws-sdk/clients/s3"));
 
 var _express = _interopRequireDefault(require("express"));
@@ -32,28 +34,44 @@ var args = process.argv;
 var resumeNetwork = !args.includes("reset");
 var networkType = args.includes("dev") ? "dev" : "live";
 
+function log(line) {
+  _fs.default.appendFileSync('log.txt', "".concat(line, "\n"));
+
+  console.log(line);
+}
+
+function resetLog() {
+  return new Promise(function (resolve) {
+    _fs.default.truncate('log.txt', 0, resolve);
+  });
+}
+
 function initialize() {
   // Create placeholder for podium object
   var podium;
   var config;
-  console.log("PODIUM SERVER | ".concat(networkType.toUpperCase())); // Make S3 connection
+  var store;
+  resetLog().then(function () {
+    // Init log
+    log("PODIUM SERVER | ".concat(networkType.toUpperCase())); // Make S3 connection
 
-  var store = new _s2.default({
-    apiVersion: '2006-03-01',
-    region: 'eu-west-1',
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-  }); // Retrieve config from S3
+    store = new _s2.default({
+      apiVersion: '2006-03-01',
+      region: 'eu-west-1',
+      accessKeyId: process.env.AWS_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }); // Retrieve config from S3
 
-  console.log(" > Retrieving Config...");
-  store.getObject({
-    Bucket: "podium-core",
-    Key: "config.json"
-  }).promise().then(function (item) {
+    log(" > Retrieving Config...");
+    return store.getObject({
+      Bucket: "podium-core",
+      Key: "config.json"
+    }).promise();
+  }).then(function (item) {
     return JSON.parse(item.Body.toString('utf-8'));
   }) // Instantiate Podium Server and connect to Radix
   .then(function (conf) {
-    console.log(" > Connecting to Radix...");
+    log(" > Connecting to Radix...");
     config = conf;
     return new _podix.PodiumServer().connect(config);
   }) // Retrieve the Root User details from S3
@@ -61,7 +79,7 @@ function initialize() {
     // Save connected podium
     podium = api; // Log progress
 
-    console.log(" > Retrieving Root User Data..."); // Retreive root user data
+    log(" > Retrieving Root User Data..."); // Retreive root user data
 
     var getRootUser = store.getObject({
       Bucket: "podium-core",
@@ -99,10 +117,10 @@ function initialize() {
         appID = _ref4[1];
 
     if (resumeNetwork && appID) {
-      console.log(" > Finding Existing Network...");
+      log(" > Finding Existing Network...");
       return podium.getNetwork(appID, rootUser);
     } else {
-      console.log(" > Creating Network...");
+      log(" > Creating Network...");
       resumeNetwork = false;
       return podium.createNetwork(rootUser);
     }
@@ -110,7 +128,7 @@ function initialize() {
   .then(function (network) {
     // Store data for new network
     if (!resumeNetwork) {
-      console.log(" >  > Saving New Network..."); // Store new app data
+      log(" >  > Saving New Network..."); // Store new app data
 
       var liveStore = store.putObject({
         Bucket: "podium-core",
@@ -139,20 +157,20 @@ function initialize() {
   // bots, and other objects
   .then(function () {
     if (resumeNetwork) {
-      console.log(" >  > Resuming Network: ".concat(podium.app));
+      log(" >  > Resuming Network: ".concat(podium.app));
       return (0, _launch.resume)(podium);
     } else {
-      console.log(" >  > Launching Network: ".concat(podium.app));
+      log(" >  > Launching Network: ".concat(podium.app));
       return (0, _launch.launch)(podium);
     }
   }) // Start the server and exit initialization
   .then(function () {
-    console.log(" > Starting Server...");
+    log(" > Starting Server...");
     podium.serve(new _express.default());
-    console.log("ONLINE");
+    log("ONLINE");
   }) // Handle errors
   .catch(function (error) {
-    return console.error(error.stack);
+    return log(error.stack);
   });
 }
 
