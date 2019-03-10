@@ -1,5 +1,6 @@
 import '@babel/polyfill';
 
+import fs from 'fs';
 import s3 from 'aws-sdk/clients/s3';
 import Express from 'express';
 
@@ -24,34 +25,54 @@ var networkType = args.includes("dev") ? "dev" : "live"
 
 
 
+function log(line) {
+	fs.appendFileSync('log.txt', `${line}\n`)
+	console.log(line)
+}
+
+function resetLog() {
+	return new Promise(resolve => {
+		fs.truncate('log.txt', 0, resolve)
+	})
+}
+
+
+
 function initialize() {
 
 	// Create placeholder for podium object
 	let podium;
 	let config;
-	console.log(`PODIUM SERVER | ${networkType.toUpperCase()}`)
+	let store;
+	resetLog()
+		.then(() => {
+	
+			// Init log
+			log(`PODIUM SERVER | ${networkType.toUpperCase()}`)
 
-	// Make S3 connection
-	var store = new s3({
-			apiVersion: '2006-03-01',
-			region: 'eu-west-1',
-			accessKeyId: process.env.AWS_ACCESS_KEY,
-			secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-		})
+			// Make S3 connection
+			store = new s3({
+				apiVersion: '2006-03-01',
+				region: 'eu-west-1',
+				accessKeyId: process.env.AWS_ACCESS_KEY,
+				secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+			})
 
-	// Retrieve config from S3
-	console.log(" > Retrieving Config...")
-	store
-		.getObject({
-			Bucket: "podium-core",
-			Key: "config.json"
+			// Retrieve config from S3
+			log(" > Retrieving Config...")
+			return store
+				.getObject({
+					Bucket: "podium-core",
+					Key: "config.json"
+				})
+				.promise()
+
 		})
-		.promise()
 		.then(item => JSON.parse(item.Body.toString('utf-8')))
 
 		// Instantiate Podium Server and connect to Radix
 		.then(conf => {
-			console.log(" > Connecting to Radix...")
+			log(" > Connecting to Radix...")
 			config = conf
 			return new PodiumServer().connect(config)
 		})
@@ -63,7 +84,7 @@ function initialize() {
 			podium = api
 
 			// Log progress
-			console.log(" > Retrieving Root User Data...")
+			log(" > Retrieving Root User Data...")
 
 			// Retreive root user data
 			var getRootUser = store
@@ -107,10 +128,10 @@ function initialize() {
 		// Create the network with the root user
 		.then(([rootUser, appID]) => {
 			if (resumeNetwork && appID) {
-				console.log(" > Finding Existing Network...")
+				log(" > Finding Existing Network...")
 				return podium.getNetwork(appID, rootUser)
 			} else {
-				console.log(" > Creating Network...")
+				log(" > Creating Network...")
 				resumeNetwork = false
 				return podium.createNetwork(rootUser)
 			}
@@ -122,7 +143,7 @@ function initialize() {
 			// Store data for new network
 			if (!resumeNetwork) {
 
-				console.log(" >  > Saving New Network...")
+				log(" >  > Saving New Network...")
 
 				// Store new app data
 				var liveStore = store
@@ -161,23 +182,23 @@ function initialize() {
 		// bots, and other objects
 		.then(() => {
 			if (resumeNetwork) {
-				console.log(` >  > Resuming Network: ${podium.app}`)
+				log(` >  > Resuming Network: ${podium.app}`)
 				return resume(podium)
 			} else {
-				console.log(` >  > Launching Network: ${podium.app}`)
+				log(` >  > Launching Network: ${podium.app}`)
 				return launch(podium)
 			}
 		})
 
 		// Start the server and exit initialization
 		.then(() => {
-			console.log(" > Starting Server...")
+			log(" > Starting Server...")
 			podium.serve(new Express)
-			console.log("ONLINE")
+			log("ONLINE")
 		})
 
 		// Handle errors
-		.catch(error => console.error(error.stack))
+		.catch(error => log(error.stack))
 
 }
 
