@@ -2,8 +2,6 @@
 
 require("@babel/polyfill");
 
-var _fs = _interopRequireDefault(require("fs"));
-
 var _s2 = _interopRequireDefault(require("aws-sdk/clients/s3"));
 
 var _express = _interopRequireDefault(require("express"));
@@ -11,6 +9,8 @@ var _express = _interopRequireDefault(require("express"));
 var _podix = require("@carter_andrewj/podix");
 
 var _launch = require("./launch");
+
+var _logging = require("./logging");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34,26 +34,14 @@ var args = process.argv;
 var resumeNetwork = !args.includes("reset");
 var networkType = args.includes("dev") ? "dev" : "live";
 
-function log(line) {
-  _fs.default.appendFileSync('log.txt', "".concat(line, "\n"));
-
-  console.log(line);
-}
-
-function resetLog() {
-  return new Promise(function (resolve) {
-    _fs.default.truncate('log.txt', 0, resolve);
-  });
-}
-
 function initialize() {
   // Create placeholder for podium object
   var podium;
   var config;
   var store;
-  resetLog().then(function () {
+  (0, _logging.resetLog)().then(function () {
     // Init log
-    log("PODIUM SERVER | ".concat(networkType.toUpperCase())); // Make S3 connection
+    (0, _logging.log)("PODIUM SERVER | ".concat(networkType.toUpperCase())); // Make S3 connection
 
     store = new _s2.default({
       apiVersion: '2006-03-01',
@@ -62,7 +50,7 @@ function initialize() {
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     }); // Retrieve config from S3
 
-    log(" > Retrieving Config...");
+    (0, _logging.log)(" > Retrieving Config...");
     return store.getObject({
       Bucket: "podium-core",
       Key: "config.json"
@@ -71,7 +59,7 @@ function initialize() {
     return JSON.parse(item.Body.toString('utf-8'));
   }) // Instantiate Podium Server and connect to Radix
   .then(function (conf) {
-    log(" > Connecting to Radix...");
+    (0, _logging.log)(" > Connecting to Radix...");
     config = conf;
     return new _podix.PodiumServer().connect(config);
   }) // Retrieve the Root User details from S3
@@ -79,7 +67,7 @@ function initialize() {
     // Save connected podium
     podium = api; // Log progress
 
-    log(" > Retrieving Root User Data..."); // Retreive root user data
+    (0, _logging.log)(" > Retrieving Root User Data..."); // Retreive root user data
 
     var getRootUser = store.getObject({
       Bucket: "podium-core",
@@ -117,10 +105,10 @@ function initialize() {
         appID = _ref4[1];
 
     if (resumeNetwork && appID) {
-      log(" > Finding Existing Network...");
+      (0, _logging.log)(" > Finding Existing Network...");
       return podium.getNetwork(appID, rootUser);
     } else {
-      log(" > Creating Network...");
+      (0, _logging.log)(" > Creating Network...");
       resumeNetwork = false;
       return podium.createNetwork(rootUser);
     }
@@ -128,7 +116,7 @@ function initialize() {
   .then(function (network) {
     // Store data for new network
     if (!resumeNetwork) {
-      log(" >  > Saving New Network..."); // Store new app data
+      (0, _logging.log)(" >  > Saving New Network..."); // Store new app data
 
       var liveStore = store.putObject({
         Bucket: "podium-core",
@@ -157,20 +145,20 @@ function initialize() {
   // bots, and other objects
   .then(function () {
     if (resumeNetwork) {
-      log(" >  > Resuming Network: ".concat(podium.app));
+      (0, _logging.log)(" >  > Resuming Network: ".concat(podium.app));
       return (0, _launch.resume)(podium);
     } else {
-      log(" >  > Launching Network: ".concat(podium.app));
+      (0, _logging.log)(" >  > Launching Network: ".concat(podium.app));
       return (0, _launch.launch)(podium);
     }
   }) // Start the server and exit initialization
   .then(function () {
-    log(" > Starting Server...");
+    (0, _logging.log)(" > Starting Server...");
     podium.serve(new _express.default());
-    log("ONLINE");
+    (0, _logging.log)("ONLINE");
   }) // Handle errors
   .catch(function (error) {
-    return log(error.stack);
+    return (0, _logging.log)(error.stack);
   });
 }
 

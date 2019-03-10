@@ -10,6 +10,8 @@ var _immutable = require("immutable");
 
 var _bots = require("./bots/bots");
 
+var _logging = require("./logging");
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -17,7 +19,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 function launch(podium) {
   return new Promise(function (resolve, reject) {
     // Set root account profile picture
-    console.log(" >  > Setting Root User Profile Picture");
+    (0, _logging.log)(" >  > Setting Root User Profile Picture");
     var rootPicture = podium.S3.getObject({
       Bucket: "podium-core",
       Key: "images/podium.png"
@@ -50,7 +52,7 @@ function launch(podium) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  console.log(" >  > Creating Account: ".concat(id));
+                  (0, _logging.log)(" >  > Creating Account: ".concat(id));
                   return _context.abrupt("return", podium.S3.getObject({
                     Bucket: "podium-core",
                     Key: account.get("picture")

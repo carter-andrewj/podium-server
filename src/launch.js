@@ -2,6 +2,7 @@ import { fromJS } from 'immutable';
 
 import { launchBots } from './bots/bots';
 
+import { log } from './logging';
 
 
 
@@ -9,7 +10,7 @@ export function launch(podium) {
 	return new Promise((resolve, reject) => {
 
 		// Set root account profile picture
-		console.log(" >  > Setting Root User Profile Picture")
+		log(" >  > Setting Root User Profile Picture")
 		var rootPicture = podium.S3
 			.getObject({
 				Bucket: "podium-core",
@@ -46,7 +47,7 @@ export function launch(podium) {
 			// Map over accounts and register
 			.then(accounts => Promise.all(accounts
 				.map(async (account, id) => {
-					console.log(` >  > Creating Account: ${id}`)
+					log(` >  > Creating Account: ${id}`)
 					return podium.S3
 						.getObject({
 							Bucket: "podium-core",

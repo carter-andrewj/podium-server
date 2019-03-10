@@ -4,3 +4,4 @@ data
 db/*
 old_src
 *.db
+log.txt

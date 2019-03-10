@@ -2,13 +2,13 @@ import { fromJS, Map, Repeat } from 'immutable';
 
 import { bots } from './botData';
 
-
+import { log } from '../logging';
 
 
 
 export function launchBots(podium) {
 
-	console.log(" >  > Managing Bots...")
+	log(" >  > Managing Bots...")
 
 	// Create bots
 	var builders = fromJS(bots)
@@ -80,7 +80,7 @@ function resumeBot(podium, bot, address) {
 
 			// Return the active bot record
 			.then(botRecord => {
-				console.log(` >  >  > Reactivated Bot: @${bot.get("id")}`)
+				log(` >  >  > Reactivated Bot: @${bot.get("id")}`)
 				resolve(botRecord)
 			})
 
@@ -160,7 +160,7 @@ function makeBot(podium, bot, i) {
 
 			// Return the bot record
 			.then(result => {
-				console.log(` >  >  > Activated New Bot: @${bot.get("id")}`)
+				log(` >  >  > Activated New Bot: @${bot.get("id")}`)
 				resolve(result[1])
 			})
 

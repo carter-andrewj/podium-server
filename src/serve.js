@@ -1,12 +1,13 @@
 import '@babel/polyfill';
 
-import fs from 'fs';
+
 import s3 from 'aws-sdk/clients/s3';
 import Express from 'express';
 
 import { PodiumServer } from '@carter_andrewj/podix';
 
 import { launch, resume } from './launch';
+import { log, resetLog } from './logging';
 
 
 // Swallow event emitter warning
@@ -25,16 +26,6 @@ var networkType = args.includes("dev") ? "dev" : "live"
 
 
 
-function log(line) {
-	fs.appendFileSync('log.txt', `${line}\n`)
-	console.log(line)
-}
-
-function resetLog() {
-	return new Promise(resolve => {
-		fs.truncate('log.txt', 0, resolve)
-	})
-}
 
 
 

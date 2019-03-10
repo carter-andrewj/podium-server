@@ -9,8 +9,10 @@ var _immutable = require("immutable");
 
 var _botData = require("./botData");
 
+var _logging = require("../logging");
+
 function launchBots(podium) {
-  console.log(" >  > Managing Bots..."); // Create bots
+  (0, _logging.log)(" >  > Managing Bots..."); // Create bots
 
   var builders = (0, _immutable.fromJS)(_botData.bots).map(function (b) {
     return (0, _immutable.Repeat)(b, b.get("clone")).toList();
@@ -54,7 +56,7 @@ function resumeBot(podium, bot, address) {
       return behaviour(bot, user);
     }) // Return the active bot record
     .then(function (botRecord) {
-      console.log(" >  >  > Reactivated Bot: @".concat(bot.get("id")));
+      (0, _logging.log)(" >  >  > Reactivated Bot: @".concat(bot.get("id")));
       resolve(botRecord);
     }) // Handle errors
     .catch(reject);
@@ -107,7 +109,7 @@ function makeBot(podium, bot, i) {
       return Promise.all([save, behave, fund]);
     }) // Return the bot record
     .then(function (result) {
-      console.log(" >  >  > Activated New Bot: @".concat(bot.get("id")));
+      (0, _logging.log)(" >  >  > Activated New Bot: @".concat(bot.get("id")));
       resolve(result[1]);
     }) // Handle errors
     .catch(reject);
