@@ -129,9 +129,13 @@ function initialize() {
 		})
 
 		// Update stored config, if required
-		.then(network => {
+		.then(podiumWithNetwork => {
+
+			// Save networked app
+			podium = podiumWithNetwork
 
 			// Store data for new network
+			const appID = podium.app
 			if (!resumeNetwork) {
 
 				log(" >  > Saving New Network...")
@@ -141,7 +145,7 @@ function initialize() {
 					.putObject({
 						Bucket: "podium-core",
 						Key: `${networkType}.json`,
-						Body: JSON.stringify({ appID: network.app }),
+						Body: JSON.stringify({ appID: appID }),
 						ContentType: "json"
 					})
 					.promise()
@@ -150,9 +154,9 @@ function initialize() {
 				var logStore = store
 					.putObject({
 						Bucket: "podium-core",
-						Key: `networks/${network.app}.json`,
+						Key: `networks/${appID}.json`,
 						Body: JSON.stringify({
-							appID: network.app,
+							appID: appID,
 							created: new Date().getTime()
 						}),
 						ContentType: "json"

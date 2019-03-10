@@ -113,8 +113,12 @@ function initialize() {
       return podium.createNetwork(rootUser);
     }
   }) // Update stored config, if required
-  .then(function (network) {
-    // Store data for new network
+  .then(function (podiumWithNetwork) {
+    // Save networked app
+    podium = podiumWithNetwork; // Store data for new network
+
+    var appID = podium.app;
+
     if (!resumeNetwork) {
       (0, _logging.log)(" >  > Saving New Network..."); // Store new app data
 
@@ -122,16 +126,16 @@ function initialize() {
         Bucket: "podium-core",
         Key: "".concat(networkType, ".json"),
         Body: JSON.stringify({
-          appID: network.app
+          appID: appID
         }),
         ContentType: "json"
       }).promise(); // Log new network
 
       var logStore = store.putObject({
         Bucket: "podium-core",
-        Key: "networks/".concat(network.app, ".json"),
+        Key: "networks/".concat(appID, ".json"),
         Body: JSON.stringify({
-          appID: network.app,
+          appID: appID,
           created: new Date().getTime()
         }),
         ContentType: "json"
